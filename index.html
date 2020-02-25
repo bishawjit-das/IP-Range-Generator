@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>IP Range Generator</title>
+        <link
+            href="https://fonts.googleapis.com/css?family=Poppins&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css"
+            integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y="
+            crossorigin="anonymous"
+        />
+        <style type="text/css">
+            body,
+            h1,
+            h2,
+            h3 {
+                font-family: 'Poppins';
+            }
+            body {
+                padding: 20px;
+            }
+            textarea {
+                min-height: 500px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-6">
+                    <h2>IP Input</h2>
+                    <small
+                        >Click outside of text box to see updated output</small
+                    >
+                    <textarea
+                        onchange="convert()"
+                        id="input"
+                        class="form-control"
+                    ></textarea>
+                </div>
+                <div class="col-xl-6">
+                    <h2>IP Output</h2>
+                    <small style="visibility:hidden">!</small>
+                    <textarea
+                        disabled
+                        id="output"
+                        class="form-control mb-3"
+                    ></textarea>
+                    <button
+                        onclick="copyoutput()"
+                        onmouseout="this.innerHTML='Copy Output'"
+                        ;
+                        class="btn btn-success"
+                        id="copybtn"
+                    >
+                        Copy Output
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            function copyoutput() {
+                var btn = document.getElementById('copybtn');
+                var copyText = document.getElementById('output');
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                document.execCommand('copy');
+                btn.innerHTML = 'Copied!';
+            }
+
+            function convert() {
+                const input = document.getElementById('input').value;
+                let iparr = input.split('\n');
+
+                let output = '';
+                for (let index = 0; index < iparr.length; index++) {
+                    let trimed = iparr[index].trim();
+                    let ev = trimed.split('.');
+                    ev.forEach(function(part, index) {
+                        if (!isNaN(part)) ev[index] = parseInt(part);
+                    }, ev);
+                    trimed = ev.join('.');
+                    if ((trimed.match(/\./g) || []).length > 3) {
+                        output += trimed + '\n';
+                        continue;
+                    }
+                    if (trimed.indexOf('-') > -1) {
+                        let match = trimed.match(/\d+-\d+/g);
+                        let match_arr = match[0].split('-');
+
+                        let range1 = (range2 = trimed);
+
+                        output +=
+                            range1
+                                .replace(match, parseInt(match_arr[0]))
+                                .replace('*', 0) +
+                            '-' +
+                            range2
+                                .replace(match, parseInt(match_arr[1]))
+                                .replace('*', 255);
+                    } else {
+                        output += trimed;
+                    }
+
+                    output += '\n';
+                }
+
+                document.getElementById('output').innerHTML = output;
+            }
+        </script>
+    </body>
+</html>
