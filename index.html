@@ -93,7 +93,7 @@
                     }, ev);
                     trimed = ev.join('.');
                     if ((trimed.match(/\./g) || []).length > 3) {
-                        output += trimed + '\n';
+                        output += 'Invalid Input \n';
                         continue;
                     }
                     if (trimed.indexOf('-') > -1) {
