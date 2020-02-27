@@ -18,12 +18,14 @@
             body,
             h1,
             h2,
-            h3 {
+            h3,
+            h5 {
                 font-family: 'Montserrat';
             }
             h1,
             h2,
-            h3 {
+            h3,
+            h5 {
                 font-weight: 700;
             }
             body {
@@ -40,47 +42,34 @@
             <div class="row">
                 <div class="col-xl-4">
                     <h2>IP Input</h2>
-                    <small
+                    <small class="text-success mb-2 d-block"
                         >Click outside of text box to see updated output</small
                     >
                     <textarea
                         onchange="convert()"
                         id="input"
-                        class="form-control"
+                        class="form-control mb-3"
                     ></textarea>
+                    <div id="outputcopy" class="d-none">
+                        <h5>Select and copy from here</h5>
+                        <textarea
+                            readonly
+                            id="outputCode"
+                            class="form-control mb-3"
+                        ></textarea>
+                    </div>
                 </div>
                 <div class="col-xl-8">
-                    <h2>IP Output</h2>
+                    <h2>
+                        IP Output
+                    </h2>
                     <small style="visibility:hidden">!</small>
                     <div id="output"></div>
-                    <!-- <textarea
-                        disabled
-                        id="output"
-                        class="form-control mb-3"
-                    ></textarea> -->
-                    <button
-                        onclick="copyoutput()"
-                        onmouseout="this.innerHTML='Copy Output'"
-                        ;
-                        class="btn btn-success"
-                        id="copybtn"
-                    >
-                        Copy Output
-                    </button>
                 </div>
             </div>
         </div>
 
         <script type="text/javascript">
-            function copyoutput() {
-                var btn = document.getElementById('copybtn');
-                var copyText = document.getElementById('output');
-                copyText.select();
-                copyText.setSelectionRange(0, 99999);
-                document.execCommand('copy');
-                btn.innerHTML = 'Copied!';
-            }
-
             function convert() {
                 const input = document.getElementById('input').value;
                 let iparr = input.split('\n');
@@ -90,6 +79,7 @@
                     '<div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr><th>Input</th><th>Output</th></tr></thead><tbody>';
                 for (let index = 0; index < iparr.length; index++) {
                     let trimed = iparr[index].trim();
+                    if (trimed.length == 0) continue;
                     tableOutput += '<tr><td>' + trimed + '</td>';
                     let ev = trimed.split('.');
                     ev.forEach(function(part, index) {
@@ -99,6 +89,7 @@
                     if ((trimed.match(/\./g) || []).length > 3) {
                         tableOutput +=
                             '<td><strike>' + trimed + '</strike></td></tr>';
+                        output += 'Invalid Input \n';
                         continue;
                     }
                     if (trimed.indexOf('-') > -1) {
@@ -107,24 +98,40 @@
 
                         let range1 = (range2 = trimed);
 
-                        tableOutput +=
-                            '<td>' +
+                        tableOutput += '<td>';
+                        let a =
                             range1
                                 .replace(match, parseInt(match_arr[0]))
                                 .replace(/\*/g, 0) +
                             '-' +
                             range2
                                 .replace(match, parseInt(match_arr[1]))
-                                .replace(/\*/g, 255) +
-                            '</td></tr>';
+                                .replace(/\*/g, 255);
+
+                        output += a;
+                        tableOutput += a + '</td></tr>';
                     } else {
                         tableOutput += '<td>' + trimed + '</td></tr>';
+                        output += trimed;
                     }
+
+                    output += '\n';
                 }
 
                 tableOutput += '</tbody></table></div>';
 
-                document.getElementById('output').innerHTML = tableOutput;
+                if (output.length < 5) {
+                    document.getElementById('output').innerHTML = '';
+                    document
+                        .getElementById('outputcopy')
+                        .classList.toggle('d-none');
+                } else {
+                    document.getElementById('output').innerHTML = tableOutput;
+                    document.getElementById('outputCode').innerHTML = output;
+                    document
+                        .getElementById('outputcopy')
+                        .classList.toggle('d-none');
+                }
             }
         </script>
     </body>
