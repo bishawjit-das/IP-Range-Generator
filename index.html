@@ -38,7 +38,7 @@
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-xl-6">
+                <div class="col-xl-4">
                     <h2>IP Input</h2>
                     <small
                         >Click outside of text box to see updated output</small
@@ -49,14 +49,15 @@
                         class="form-control"
                     ></textarea>
                 </div>
-                <div class="col-xl-6">
+                <div class="col-xl-8">
                     <h2>IP Output</h2>
                     <small style="visibility:hidden">!</small>
-                    <textarea
+                    <div id="output"></div>
+                    <!-- <textarea
                         disabled
                         id="output"
                         class="form-control mb-3"
-                    ></textarea>
+                    ></textarea> -->
                     <button
                         onclick="copyoutput()"
                         onmouseout="this.innerHTML='Copy Output'"
@@ -85,15 +86,19 @@
                 let iparr = input.split('\n');
 
                 let output = '';
+                let tableOutput =
+                    '<div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr><th>Input</th><th>Output</th></tr></thead><tbody>';
                 for (let index = 0; index < iparr.length; index++) {
                     let trimed = iparr[index].trim();
+                    tableOutput += '<tr><td>' + trimed + '</td>';
                     let ev = trimed.split('.');
                     ev.forEach(function(part, index) {
                         if (!isNaN(part)) ev[index] = parseInt(part);
                     }, ev);
                     trimed = ev.join('.');
                     if ((trimed.match(/\./g) || []).length > 3) {
-                        output += 'Invalid Input \n';
+                        tableOutput +=
+                            '<td><strike>' + trimed + '</strike></td></tr>';
                         continue;
                     }
                     if (trimed.indexOf('-') > -1) {
@@ -102,22 +107,24 @@
 
                         let range1 = (range2 = trimed);
 
-                        output +=
+                        tableOutput +=
+                            '<td>' +
                             range1
                                 .replace(match, parseInt(match_arr[0]))
                                 .replace(/\*/g, 0) +
                             '-' +
                             range2
                                 .replace(match, parseInt(match_arr[1]))
-                                .replace(/\*/g, 255);
+                                .replace(/\*/g, 255) +
+                            '</td></tr>';
                     } else {
-                        output += trimed;
+                        tableOutput += '<td>' + trimed + '</td></tr>';
                     }
-
-                    output += '\n';
                 }
 
-                document.getElementById('output').innerHTML = output;
+                tableOutput += '</tbody></table></div>';
+
+                document.getElementById('output').innerHTML = tableOutput;
             }
         </script>
     </body>
