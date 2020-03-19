@@ -86,6 +86,14 @@
                         if (!isNaN(part)) ev[index] = parseInt(part);
                     }, ev);
                     trimed = ev.join('.');
+					if ( trimed.endsWith('*.*') ) {
+						let range1 = (range2 = trimed);
+                        tableOutput += '<td>';
+                        let a = range1.replace('*.*', '0.0') + '-' + range2.replace('*.*', '255.255');
+                        output += a + '\n';
+                        tableOutput += a + '</td></tr>';
+						continue;
+					}
                     if ((trimed.match(/\./g) || []).length > 3) {
                         tableOutput +=
                             '<td><strike>' + trimed + '</strike></td></tr>';
